@@ -13,6 +13,9 @@ import random
 #     )
 # }
 
+TIC_TIMEOUT = 0.1
+STARS = '+*.:'
+
 ANIMATION_INTERVAL = {
     'star': (2, 0.3, 0.5, 0.3)
 }
@@ -27,15 +30,7 @@ ANIMATION_STEP = {
 }
 
 
-# def draw_star_animation(canvas, y, x, star):
-#     for state in ANIMATIONS['star']:
-#         t, style = state
-#         canvas.addstr(y, x, star, style)
-#         canvas.refresh()
-#         time.sleep(t)
-
-
-async def blink(canvas, row, column, symbol='*'):
+async def draw_star(canvas, row, column, symbol='*'):
     # coroutine will never be exhausted
     while True:
         for step in ANIMATION_STEP['star']:
@@ -46,21 +41,35 @@ async def blink(canvas, row, column, symbol='*'):
 def main(canvas):
     canvas.border()
     curses.curs_set(False)
-
-    start_pos = [50, 3]
     coroutines = []
-    for _ in range(50):
-        x, y = start_pos
-        coroutines.append(blink(canvas, y, x, '*'))
-        start_pos[random.choice((0, 1,))] += 1
+    for x, y in get_random_xy(*canvas.getmaxyx()):
+        coroutines.append(
+            draw_star(canvas, y, x, random.choice(STARS))
+        )
 
+    start_event_loop(coroutines, canvas)
+
+
+def get_random_xy(max_y, max_x, density=0.1):
+    used_xy = set()
+
+    for _ in range(int(max_x * max_y * density)):
+        x_y = random.randint(1, max_x - 2), random.randint(1, max_y - 2)
+
+        if x_y in used_xy:
+            continue
+
+        used_xy.add(x_y)
+        yield x_y
+
+
+def start_event_loop(coroutines, canvas):
     while True:
         for t in ANIMATION_INTERVAL['star']:
             for c in coroutines:
                 c.send(None)
             canvas.refresh()
             time.sleep(t)
-        # draw_star_animation(canvas, 5, 20, "*")
 
 
 if __name__ == '__main__':
