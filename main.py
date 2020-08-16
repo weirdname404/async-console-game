@@ -4,7 +4,9 @@ import random
 import config
 from animations.star_animation import STAR_ANIMATION, draw_star
 from animations.fire_animation import fire
-from utils import shift_animation, get_random_xy, Sleep
+from utils import shift_animation
+from utils.playscreen import get_random_xy
+from utils.event_loop import Sleep
 
 
 def main(canvas):
@@ -30,7 +32,7 @@ def main(canvas):
         fire(
             canvas=canvas,
             start_row=max_y - 2,
-            start_column= max_x // 2
+            start_column=max_x // 2
         )
     )
 
@@ -39,11 +41,12 @@ def main(canvas):
 
 def start_event_loop(coroutines, canvas):
     while True:
-        for c in coroutines:
+        for i in range(len(coroutines)):
             try:
-                clock: Sleep = c.send(None)
+                clock: Sleep = coroutines[i].send(None)
+            # coroutine was exhausted
             except (StopIteration, RuntimeError):
-                continue
+                coroutines = coroutines[:i] + coroutines[i + 1:]
 
         canvas.refresh()
         time.sleep(clock.seconds)

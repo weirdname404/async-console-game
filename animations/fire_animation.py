@@ -1,5 +1,5 @@
 import curses
-from utils import sleep
+from utils.event_loop import sleep
 
 
 async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):

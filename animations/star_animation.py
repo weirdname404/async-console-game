@@ -1,5 +1,5 @@
 import curses
-from utils import sleep
+from utils.event_loop import sleep
 from _types import Animation
 
 
