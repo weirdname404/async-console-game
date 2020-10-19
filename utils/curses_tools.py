@@ -77,6 +77,15 @@ def draw_frame(canvas, start_row, start_column, text, negative=False):
             canvas.addch(row, column, symbol)
 
 
+def clean_draw(canvas, prev_xy, xy, prev_frame, frame):
+    '''deletes prev frame and draws new one'''
+    x0, y0 = prev_xy
+    x1, y1 = xy
+    if prev_frame:
+        draw_frame(canvas, y0, x0, prev_frame, negative=True)
+    draw_frame(canvas, y1, x1, frame)
+
+
 def get_frame_size(text):
     """
     Calculates size of multiline text fragment,
