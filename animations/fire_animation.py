@@ -1,17 +1,24 @@
 import curses
-from utils.event_loop import sleep
+from core.event_loop import Sleep
+from config import LASER_SPEED
 
 
-async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0):
+async def animate_gunshot(
+    canvas,
+    y: int,
+    x: int,
+    rows_speed: int = -LASER_SPEED,
+    columns_speed: int = 0
+):
     """Display animation of gun shot, direction and speed can be specified."""
 
-    row, column = start_row, start_column
+    row, column = y, x
 
     canvas.addstr(round(row), round(column), '*')
-    await sleep(2)
+    await Sleep(2)
 
     canvas.addstr(round(row), round(column), 'O')
-    await sleep(2)
+    await Sleep(2)
     canvas.addstr(round(row), round(column), ' ')
 
     row += rows_speed
@@ -26,7 +33,7 @@ async def fire(canvas, start_row, start_column, rows_speed=-0.3, columns_speed=0
 
     while 0 < row < max_row and 0 < column < max_column:
         canvas.addstr(round(row), round(column), symbol)
-        await sleep(1)
+        await Sleep(1)
         canvas.addstr(round(row), round(column), ' ')
         row += rows_speed
         column += columns_speed

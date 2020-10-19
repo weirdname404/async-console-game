@@ -1,7 +1,6 @@
 import curses
-from utils.event_loop import sleep
+from core.event_loop import static_sleep
 from _types import Animation
-
 
 # (TICs, State)
 STAR_ANIMATION: Animation = [
@@ -12,8 +11,14 @@ STAR_ANIMATION: Animation = [
 ]
 
 
-async def draw_star(canvas, row: int, column: int, star: str, animation: Animation):
+async def animate_star(
+    canvas,
+    row: int,
+    column: int,
+    star: str,
+    animation: Animation
+):
     while True:
-        for ticks, state in animation:
+        for tics, state in animation:
             canvas.addstr(row, column, star, state)
-            await sleep(ticks)
+            await static_sleep(tics)
