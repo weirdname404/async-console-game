@@ -1,24 +1,25 @@
-import time
 import curses
 import random
 import config
-from animations.star_animation import STAR_ANIMATION, draw_star
-from animations.fire_animation import fire
+from animations.star_animation import STAR_ANIMATION, animate_star
+from animations.fire_animation import animate_gunshot
+from animations.spaceship.animation import animate_spaceship
+from core.event_loop import game_event_loop
 from utils import shift_animation
-from utils.playscreen import get_random_xy
-from utils.event_loop import Sleep
+from utils.curses_tools import get_random_coordinate
 
 
 def main(canvas):
     canvas.border()
+    canvas.nodelay(1)
     curses.curs_set(False)
     coroutines = []
     animation_shifter = shift_animation(STAR_ANIMATION)
     max_y, max_x = canvas.getmaxyx()
 
-    for x, y in get_random_xy(max_y, max_x):
+    for x, y in get_random_coordinate(max_y, max_x):
         coroutines.append(
-            draw_star(
+            animate_star(
                 canvas=canvas,
                 row=y,
                 column=x,
@@ -28,28 +29,20 @@ def main(canvas):
         )
 
     # add single fire animation
-    coroutines.append(
-        fire(
+    dynamic_coroutines = [
+        animate_gunshot(
             canvas=canvas,
-            start_row=max_y - 2,
-            start_column=max_x // 2
+            y=max_y - 11,
+            x=max_x // 2 + 2
         )
+    ]
+
+    game_event_loop(
+        static_coroutines=coroutines,
+        dynamic_coroutines=dynamic_coroutines,
+        spaceship_coroutine=animate_spaceship,
+        canvas=canvas
     )
-
-    start_event_loop(coroutines, canvas)
-
-
-def start_event_loop(coroutines, canvas):
-    while True:
-        for i in range(len(coroutines)):
-            try:
-                clock: Sleep = coroutines[i].send(None)
-            # coroutine was exhausted
-            except (StopIteration, RuntimeError):
-                coroutines = coroutines[:i] + coroutines[i + 1:]
-
-        canvas.refresh()
-        time.sleep(clock.seconds)
 
 
 if __name__ == '__main__':
