@@ -12,26 +12,13 @@ class Sleep:
         self.tics = tics
 
 
-async def static_sleep(amount_of_tics):
-    for _ in range(amount_of_tics):
-        await Sleep(0)
-
-
-def game_event_loop(
-    static_coroutines, dynamic_coroutines, spaceship_coroutine, canvas
-):
+def start_game_loop(coroutines, canvas):
     # 0.1 sec by default
     tic = config.TIC_TIMEOUT
-    sleeping_cors = [(0, cor) for cor in dynamic_coroutines]
-    max_y, max_x = canvas.getmaxyx()
-    spaceship = spaceship_coroutine(canvas=canvas, x=max_x//2, y=max_y-10)
+    sleeping_cors = [(0, cor) for cor in coroutines]
 
     while True:
-        # static coroutines don't change and don't exhaust
-        for cor in static_coroutines:
-            cor.send(None)
-
-        # dynamic coroutines can exhaust and can change
+        # let's split coroutines on active and unactive
         active_cors = []
         arr = []
         for tics, cor in sleeping_cors:
@@ -50,9 +37,6 @@ def game_event_loop(
             except StopIteration:
                 continue
             sleeping_cors.append((timeout.tics, cor))
-
-        # spaceship contoller
-        spaceship.send(None)
 
         canvas.refresh()
         time.sleep(tic)
