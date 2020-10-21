@@ -4,7 +4,7 @@ import config
 from animations.star_animation import STAR_ANIMATION, animate_star
 from animations.fire_animation import animate_gunshot
 from animations.spaceship.animation import (
-    animate_spaceship, FRAME_ROWS, FRAME_COLS
+    animate_spaceship, FRAME_WIDTH, FRAME_HEIGHT
 )
 from core.event_loop import start_game_loop
 from utils import shift_animation
@@ -17,13 +17,12 @@ def main(canvas):
     curses.curs_set(False)
     coroutines = []
     animation_shifter = shift_animation(STAR_ANIMATION)
-    width, height = canvas.getmaxyx()
-    max_y = width - 1
-    max_x = height - 1
+    height, width = canvas.getmaxyx()
+    max_y, max_x = height - 1, width - 1
     canvas_center = max_x // 2
     spaceship_x = canvas_center
-    spaceship_y = max_y - FRAME_ROWS - config.SPACESHIP_SPEED
-    spaceship_half = FRAME_COLS // 2
+    spaceship_y = max_y - FRAME_HEIGHT - config.SPACESHIP_SPEED
+    spaceship_half = FRAME_WIDTH // 2
 
     for x, y in get_random_coordinate(max_y, max_x):
         coroutines.append(
