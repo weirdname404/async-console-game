@@ -49,8 +49,8 @@ async def animate_spaceship(canvas, y, x):
             y1 = y + dy * SPACESHIP_SPEED
             # check borders intersection
             # choose closest point to the border
-            x1 = min(max_x, x1) if dx > 0 else max(1, x1)
-            y1 = min(max_y, y1) if dy > 0 else max(1, y1)
+            x1 = max(1, min(x1, max_x))
+            y1 = max(1, min(y1, max_y))
             # clean prev frame at old pos and draw current frame at new pos
             clean_draw(canvas, (x, y), (x1, y1), prev_frame, frame)
             x = x1
