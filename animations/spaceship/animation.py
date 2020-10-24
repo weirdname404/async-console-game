@@ -1,5 +1,6 @@
 from itertools import cycle
 from core.event_loop import Sleep
+from game_types import Animation
 from utils.curses_tools import (
     get_frame_size, read_controls, clean_draw
 )
@@ -11,15 +12,19 @@ with open('animations/spaceship/rocket_frame_1.txt', 'r') as f:
 with open('animations/spaceship/rocket_frame_2.txt', 'r') as f:
     ROCKET_FRAME_2 = f.read()
 
+SPACESHIP_ANIMATION: Animation = (
+    (2, ROCKET_FRAME_1),
+    (2, ROCKET_FRAME_2)
+)
 FRAME_HEIGHT, FRAME_WIDTH = get_frame_size(ROCKET_FRAME_1)
 
 
 def _frame_generator():
-    frames = cycle((ROCKET_FRAME_1, ROCKET_FRAME_2))
+    frames = cycle(SPACESHIP_ANIMATION)
     while True:
-        frame = next(frames)
+        tics, frame = next(frames)
         # animation should change every 2 tics
-        for _ in range(2):
+        for _ in range(tics):
             yield frame
 
 

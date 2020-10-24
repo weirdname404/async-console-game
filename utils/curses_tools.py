@@ -1,6 +1,6 @@
 import random
 import config
-from _types import Coordinate
+from game_types import Coordinate
 from typing import Generator
 
 SPACE_KEY_CODE = 32
