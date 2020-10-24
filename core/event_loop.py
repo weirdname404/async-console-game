@@ -1,5 +1,6 @@
 import config
 import time
+from utils import Singleton
 
 
 class Sleep:
@@ -12,31 +13,41 @@ class Sleep:
         self.tics = tics
 
 
-def start_game_loop(coroutines, canvas):
-    # 0.1 sec by default
-    tic = config.TIC_TIMEOUT
-    sleeping_cors = [(0, cor) for cor in coroutines]
+class GameLoop(metaclass=Singleton):
+    __slots__ = ('canvas', 'coroutines')
 
-    while True:
-        # let's split coroutines on active and unactive
-        active_cors = []
-        arr = []
-        for tics, cor in sleeping_cors:
-            tics -= 1
-            if tics <= 0:
-                active_cors.append((tics, cor))
-            else:
-                arr.append((tics, cor))
+    def __init__(self, coroutines, canvas):
+        self.coroutines = []
+        self.canvas = canvas
+        for cor in coroutines:
+            self.add_coroutine(cor)
 
-        sleeping_cors = arr
+    def add_coroutine(self, coroutine):
+        self.coroutines.append((0, coroutine))
 
-        for _, cor in active_cors:
-            try:
-                timeout = cor.send(None)
-            # exhausted coroutine is skipped
-            except StopIteration:
-                continue
-            sleeping_cors.append((timeout.tics, cor))
+    def start(self):
+        # 0.1 sec by default
+        tic = config.TIC_TIMEOUT
+        while True:
+            # let's split coroutines on active and inactive
+            active_cors = []
+            arr = []
+            for tics, cor in self.coroutines:
+                tics -= 1
+                if tics <= 0:
+                    active_cors.append((tics, cor))
+                else:
+                    arr.append((tics, cor))
+            # inactive coroutines
+            self.coroutines = arr
 
-        canvas.refresh()
-        time.sleep(tic)
+            for _, cor in active_cors:
+                try:
+                    timeout = cor.send(None)
+                # exhausted coroutine is skipped
+                except StopIteration:
+                    continue
+                self.coroutines.append((timeout.tics, cor))
+
+            self.canvas.refresh()
+            time.sleep(tic)
