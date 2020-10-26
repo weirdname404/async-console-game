@@ -1,7 +1,7 @@
 import random
 import config
-from game_types import Coordinate
-from typing import Generator
+from game_types import Coordinate, Size
+from typing import Iterator
 
 SPACE_KEY_CODE = 32
 LEFT_KEY_CODE = 260
@@ -86,24 +86,22 @@ def clean_draw(canvas, prev_xy, xy, prev_frame, frame):
     draw_frame(canvas, y1, x1, frame)
 
 
-def get_frame_size(text):
+def get_frame_size(text: str) -> Size:
     """
     Calculates size of multiline text fragment,
     returns pair — number of rows and colums.
     """
 
     lines = text.splitlines()
-    rows = len(lines)
-    columns = max([len(line) for line in lines])
+    height = len(lines)
+    width = max([len(line) for line in lines])
 
-    return rows, columns
+    return width, height
 
 
-def get_random_coordinate(
-    max_y: int,
-    max_x: int,
-    density: float = None
-) -> Generator[Coordinate, None, None]:
+def get_random_coordinate(max_y: int,
+                          max_x: int,
+                          density: float = None) -> Iterator[Coordinate]:
 
     used_xy = set()
     density = config.STAR_DENSITY if density is None else density

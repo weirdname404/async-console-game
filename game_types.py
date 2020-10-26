@@ -1,5 +1,11 @@
-from typing import Tuple
+from typing import Tuple, Union
 
-Frame = Tuple[int, int]
-Animation = Tuple[Frame]
+# (x, y)
 Coordinate = Tuple[int, int]
+# (width, height)
+Size = Tuple[int, int]
+
+Tic = int
+FrameState = Union[int, str]
+Frame = Tuple[Tic, FrameState]
+Animation = Tuple[Frame]
