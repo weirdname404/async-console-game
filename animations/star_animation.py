@@ -1,6 +1,6 @@
 import curses
 from core.event_loop import Sleep
-from game_types import Animation
+from core.types import Animation
 
 # (TICs, State)
 STAR_ANIMATION: Animation = (
