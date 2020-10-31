@@ -1,39 +1,49 @@
 import curses
 from core.event_loop import Sleep
 from config import LASER_SPEED
+from core.obstacles import obstacle_manager
+from core.types import Coordinate, Animation
+
+shot_animation: Animation = (
+    (1, '*'),
+    (1, '0')
+)
 
 
-async def animate_gunshot(
-    canvas,
-    y: int,
-    x: int,
-    rows_speed: int = -LASER_SPEED,
-    columns_speed: int = 0
-):
-    """Display animation of gun shot, direction and speed can be specified."""
+async def animate_gunshot(canvas,
+                          pos: Coordinate,
+                          velocity=None):
+    """Draws animation of gun shot, direction and speed can be specified."""
 
-    row, column = y, x
+    x, y = map(round, pos)
+    if velocity is None:
+        vel_x, vel_y = 0, -LASER_SPEED
+    else:
+        vel_x, vel_y = velocity
 
-    canvas.addstr(round(row), round(column), '*')
-    await Sleep(2)
+    for tics, frame in shot_animation:
+        canvas.addstr(y, x, frame)
+        await Sleep(tics)
+    # clear last frame of shot animation
+    canvas.addstr(y, x, ' ')
 
-    canvas.addstr(round(row), round(column), 'O')
-    await Sleep(2)
-    canvas.addstr(round(row), round(column), ' ')
+    x += vel_x
+    y += vel_y
 
-    row += rows_speed
-    column += columns_speed
+    symbol = '-' if vel_x else '|'
 
-    symbol = '-' if columns_speed else '|'
-
-    rows, columns = canvas.getmaxyx()
-    max_row, max_column = rows - 1, columns - 1
+    height, width = canvas.getmaxyx()
+    max_y, max_x = height - 1, width - 1
 
     curses.beep()
 
-    while 0 < row < max_row and 0 < column < max_column:
-        canvas.addstr(round(row), round(column), symbol)
+    while 0 < y < max_y and 0 < x < max_x:
+        for obstacle in obstacle_manager.get_front_objects(x):
+            if obstacle.has_collision((x, y)):
+                obstacle.terminate()
+                return
+        canvas.addstr(round(y), round(x), symbol)
         await Sleep(1)
-        canvas.addstr(round(row), round(column), ' ')
-        row += rows_speed
-        column += columns_speed
+        canvas.addstr(round(y), round(x), ' ')
+        x += vel_x
+        y += vel_y
