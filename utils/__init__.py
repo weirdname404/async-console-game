@@ -1,5 +1,5 @@
 from typing import Iterator, List, Dict, Tuple, Any
-from game_types import Animation
+from core.types import Animation
 
 
 def shift_animation(animation_t: Animation) -> Iterator[Tuple[Any, ...]]:
