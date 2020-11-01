@@ -1,14 +1,21 @@
 import random
-from config import GARBAGE_SPAWN_COOLDOWN as gsc
-from core.obstacles import Obstacle
-from core.event_loop import GameLoop, Sleep
 from animations.garbage.animation import animate_garbage, GARBAGE_FRAMES
+from animations.screen import game_over_frame
+from core.obstacles import Obstacle
+from core.objects import Game
+from core.event_loop import GameLoop, Sleep
+from utils.curses_tools import get_frame_size, draw_frame
 
 
-async def fill_orbit_with_garbage(canvas, cooldown=gsc):
+async def fill_orbit_with_garbage(canvas, cooldown=None):
     '''Garbage spawner'''
     _, width = canvas.getmaxyx()
     game_loop = GameLoop()
+    game = Game()
+    # there should be no garbage in the very beginning
+    while game.get_garbage_delay_tics() is None:
+        await Sleep(1)
+
     cnt = 1
     while True:
         x, y = random.randint(1, width), 0
@@ -23,4 +30,28 @@ async def fill_orbit_with_garbage(canvas, cooldown=gsc):
             )
         )
         cnt += 1
-        await Sleep(cooldown)
+        await Sleep(game.get_garbage_delay_tics())
+
+
+async def show_gameover(canvas):
+    '''Show game over in the center of the screen'''
+    centet_y, center_x = map(lambda v: v // 2, canvas.getmaxyx())
+    w, h = get_frame_size(game_over_frame)
+    start_x = center_x - w // 2
+    start_y = centet_y - h // 2
+
+    # small pause
+    await Sleep(10)
+
+    while True:
+        draw_frame(canvas, start_x, start_y, game_over_frame)
+        await Sleep(1)
+
+
+async def show_game_progress(canvas, x, y):
+    game = Game()
+    while True:
+        text = f"{game.year}   {game.text}"
+        draw_frame(canvas, x, y, text)
+        await Sleep(1)
+        draw_frame(canvas, x, y, text, True)
