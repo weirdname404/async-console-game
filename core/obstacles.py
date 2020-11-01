@@ -15,9 +15,6 @@ class ObstacleManager(metaclass=Singleton):
 
     def add_object(self, obj):
         self.objects[obj.uid] = obj
-        # memory leak
-        if len(self.objects) > 10:
-            raise Exception
 
     def get_front_objects(self, x: int, x1: int = 1):
         '''Yields object that has intersection on X axis with given x and x1'''
