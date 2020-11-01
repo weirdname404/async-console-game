@@ -5,7 +5,7 @@ from animations.spaceship.animation import (
     animate_spaceship, FRAME_HEIGHT
 )
 from config import (
-    STARS, DEBUG, TEXT_WINDOW_H,
+    STARS, BORDERS, TEXT_WINDOW_H,
     TEXT_WINDOW_W, START_Y_DELTA,
     START_YEAR
 )
@@ -53,7 +53,7 @@ def main(canvas):
         ]
     )
 
-    if DEBUG:
+    if BORDERS:
         coroutines.append(show_obstacles(canvas))
 
     GameLoop(coroutines, canvas).start()
