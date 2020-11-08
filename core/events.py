@@ -4,6 +4,7 @@ from animations.screen import game_over_frame
 from core.obstacles import Obstacle
 from core.objects import Game
 from core.event_loop import GameLoop, Sleep
+from itertools import count
 from utils.curses_tools import get_frame_size, draw_frame
 
 
@@ -16,20 +17,19 @@ async def fill_orbit_with_garbage(canvas, cooldown=None):
     while game.get_garbage_delay_tics() is None:
         await Sleep(1)
 
-    cnt = 1
-    while True:
+    for uid in count(1, 1):
         x, y = random.randint(1, width), 0
+        obstacle = Obstacle(
+            pos=(x, y),
+            frame=random.choice(GARBAGE_FRAMES),
+            uid=uid
+        )
         game_loop.add_coroutine(
             animate_garbage(
                 canvas=canvas,
-                garbage=Obstacle(
-                    pos=(x, y),
-                    frame=random.choice(GARBAGE_FRAMES),
-                    uid=cnt
-                )
+                garbage=obstacle
             )
         )
-        cnt += 1
         await Sleep(game.get_garbage_delay_tics())
 
 

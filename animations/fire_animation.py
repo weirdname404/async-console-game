@@ -12,14 +12,11 @@ shot_animation: Animation = (
 
 async def animate_gunshot(canvas,
                           pos: Coordinate,
-                          velocity=None):
+                          velocity=(0, -LASER_SPEED)):
     """Draws animation of gun shot, direction and speed can be specified."""
 
     x, y = map(round, pos)
-    if velocity is None:
-        vel_x, vel_y = 0, -LASER_SPEED
-    else:
-        vel_x, vel_y = velocity
+    vel_x, vel_y = velocity
 
     for tics, frame in shot_animation:
         canvas.addstr(y, x, frame)

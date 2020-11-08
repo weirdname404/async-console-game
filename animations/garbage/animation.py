@@ -21,20 +21,20 @@ async def animate_garbage(canvas, garbage, velocity=0.6):
     obstacle_manager.add_object(garbage)
     frame = garbage.frame
 
-    try:
-        while y < window_height:
-            if garbage.term:
-                raise Exception
-            draw_frame(canvas, x, y, frame)
-            await Sleep(0)
-            draw_frame(canvas, x, y, frame, negative=True)
-            y += velocity
-            garbage.y = y
-    except Exception:
-        GameLoop().add_coroutine(
-            animate_explosion(canvas, garbage.get_center_pos())
-        )
-        return
+    while y < window_height:
+        # terminate garbage object
+        if garbage.term:
+            GameLoop().add_coroutine(
+                animate_explosion(canvas, garbage.get_center_pos())
+            )
+            obstacle_manager.remove_object(garbage.uid)
+            return
+        # draw moving garbage
+        draw_frame(canvas, x, y, frame)
+        await Sleep(0)
+        draw_frame(canvas, x, y, frame, negative=True)
+        y += velocity
+        garbage.y = y
 
-    finally:
-        obstacle_manager.remove_object(garbage.uid)
+    # garbage flew away
+    obstacle_manager.remove_object(garbage.uid)

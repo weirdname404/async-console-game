@@ -31,23 +31,23 @@ class GameLoop(metaclass=Singleton):
         while True:
             # let's split coroutines on active and inactive
             active_cors = []
-            arr = []
-            for tics, cor in self.coroutines:
+            inactive_cors = []
+            for tics, coroutine in self.coroutines:
                 tics -= 1
                 if tics <= 0:
-                    active_cors.append((tics, cor))
+                    active_cors.append((tics, coroutine))
                 else:
-                    arr.append((tics, cor))
+                    inactive_cors.append((tics, coroutine))
             # inactive coroutines
-            self.coroutines = arr
+            self.coroutines = inactive_cors
 
-            for _, cor in active_cors:
+            for _, coroutine in active_cors:
                 try:
-                    timeout = cor.send(None)
+                    timeout = coroutine.send(None)
                 # exhausted coroutine is skipped
                 except StopIteration:
                     continue
-                self.coroutines.append((timeout.tics, cor))
+                self.coroutines.append((timeout.tics, coroutine))
 
             self.canvas.refresh()
             time.sleep(tic)

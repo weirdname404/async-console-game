@@ -31,7 +31,7 @@ def main(canvas):
     spaceship_x = max_x // 2
     spaceship_y = max_y - FRAME_HEIGHT - START_Y_DELTA
 
-    animation_shifter = shift_animation(STAR_ANIMATION)
+    animation_generator = shift_animation(STAR_ANIMATION)
     coroutines = []
     for x, y in get_random_coordinate(max_x, max_y):
         coroutines.append(
@@ -39,7 +39,7 @@ def main(canvas):
                 canvas=canvas,
                 pos=(x, y),
                 star=random.choice(STARS),
-                animation=next(animation_shifter)
+                animation=next(animation_generator)
             )
         )
 
