@@ -56,7 +56,10 @@ class Game(metaclass=Singleton):
             return 2
 
 
-class SpaceShip(metaclass=Singleton):
+class SpaceShip:
     __slots__ = (
         'max_speed', 'fire_cooldown', 'frame'
     )
+
+
+spaceship = SpaceShip()

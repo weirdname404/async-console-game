@@ -1,7 +1,7 @@
 from animations.spaceship.animation import FRAME_HEIGHT, FRAME_WIDTH
 from animations.fire_animation import animate_gunshot
 from animations.explosion import animate_explosion
-from core.objects import SpaceShip, Game
+from core.objects import spaceship, Game
 from core.obstacles import obstacle_manager
 from core.physics import update_velocity
 from core.event_loop import Sleep, GameLoop
@@ -26,12 +26,11 @@ async def run_spaceship(canvas, x, y):
     prev_frame = None
     game_loop = GameLoop()
     game = Game()
-    ship = SpaceShip()
     vel_x, vel_y = 0, 0
 
     while True:
         # get current frame
-        frame = ship.frame
+        frame = spaceship.frame
         # read controls
         dy, dx, space = read_controls(canvas)
         if space and game.is_gun_available():

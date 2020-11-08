@@ -1,5 +1,5 @@
 from itertools import cycle
-from core.objects import SpaceShip
+from core.objects import spaceship
 from core.event_loop import Sleep
 from core.types import Animation
 from utils.curses_tools import get_frame_size
@@ -19,7 +19,6 @@ FRAME_WIDTH, FRAME_HEIGHT = get_frame_size(ROCKET_FRAME_1)
 
 
 async def animate_spaceship():
-    ship = SpaceShip()
     for tics, frame in cycle(SPACESHIP_ANIMATION):
-        ship.frame = frame
+        spaceship.frame = frame
         await Sleep(tics)
