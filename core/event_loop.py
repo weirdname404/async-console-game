@@ -1,6 +1,6 @@
-import config
 import time
 from utils import Singleton
+from config import TIC_TIMEOUT
 
 
 class Sleep:
@@ -26,18 +26,15 @@ class GameLoop(metaclass=Singleton):
         self.coroutines.append((0, coroutine))
 
     def start(self):
-        # 0.1 sec by default
-        tic = config.TIC_TIMEOUT
         while True:
             # let's split coroutines on active and inactive
             active_cors = []
             inactive_cors = []
             for tics, coroutine in self.coroutines:
-                tics -= 1
                 if tics <= 0:
                     active_cors.append((tics, coroutine))
                 else:
-                    inactive_cors.append((tics, coroutine))
+                    inactive_cors.append((tics - 1, coroutine))
             # inactive coroutines
             self.coroutines = inactive_cors
 
@@ -50,4 +47,5 @@ class GameLoop(metaclass=Singleton):
                 self.coroutines.append((timeout.tics, coroutine))
 
             self.canvas.refresh()
-            time.sleep(tic)
+            # 0.1 sec by default
+            time.sleep(TIC_TIMEOUT)
