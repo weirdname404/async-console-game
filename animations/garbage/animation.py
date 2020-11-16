@@ -31,7 +31,7 @@ async def animate_garbage(canvas, garbage, velocity=0.6):
             return
         # draw moving garbage
         draw_frame(canvas, x, y, frame)
-        await Sleep(0)
+        await Sleep(1)
         draw_frame(canvas, x, y, frame, negative=True)
         y += velocity
         garbage.y = y

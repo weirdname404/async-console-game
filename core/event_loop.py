@@ -31,10 +31,11 @@ class GameLoop(metaclass=Singleton):
             active_cors = []
             inactive_cors = []
             for tics, coroutine in self.coroutines:
+                tics -= 1
                 if tics <= 0:
                     active_cors.append((tics, coroutine))
                 else:
-                    inactive_cors.append((tics - 1, coroutine))
+                    inactive_cors.append((tics, coroutine))
             # inactive coroutines
             self.coroutines = inactive_cors
 

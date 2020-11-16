@@ -77,6 +77,6 @@ async def run_spaceship(canvas, x, y):
                     show_gameover(canvas)
                 )
                 return
-
-        await Sleep(0)
+        # sleep for 1 Game Tic or 1 Event Loop iteration
+        await Sleep(1)
         prev_frame = frame

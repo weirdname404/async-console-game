@@ -100,7 +100,7 @@ async def show_obstacles(canvas):
         for x, y, frame in boxes:
             draw_frame(canvas, x, y, frame)
 
-        await Sleep(0)
+        await Sleep(1)
 
         for x, y, frame in boxes:
             draw_frame(canvas, x, y, frame, negative=True)
