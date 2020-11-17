@@ -1,7 +1,7 @@
 import random
 import config
-from _types import Coordinate
-from typing import Generator
+from core.types import Coordinate, Size
+from typing import Iterator
 
 SPACE_KEY_CODE = 32
 LEFT_KEY_CODE = 260
@@ -42,68 +42,70 @@ def read_controls(canvas):
     return rows_direction, columns_direction, space_pressed
 
 
-def draw_frame(canvas, start_row, start_column, text, negative=False):
+def draw_frame(canvas,
+               start_x: int,
+               start_y: int,
+               text: str,
+               negative: bool = False):
     """
     Draws multiline text fragment on canvas,
     erases text instead of drawing if negative=True is specified.
     """
+    height, width = canvas.getmaxyx()
 
-    rows_number, columns_number = canvas.getmaxyx()
-
-    for row, line in enumerate(text.splitlines(), round(start_row)):
-        if row < 0:
+    for y, line in enumerate(text.splitlines(), round(start_y)):
+        if y < 0:
             continue
 
-        if row >= rows_number:
+        if y >= height:
             break
 
-        for column, symbol in enumerate(line, round(start_column)):
-            if column < 0:
+        for x, symbol in enumerate(line, round(start_x)):
+            if x < 0:
                 continue
 
-            if column >= columns_number:
+            if x >= width:
                 break
 
             if symbol == ' ':
                 continue
 
-            # Check that current position it is not in a lower right corner of the window
+            # Check that position is not in a lower right corner of the window
             # Curses will raise exception in that case. Don`t ask why…
             # https://docs.python.org/3/library/curses.html#curses.window.addch
-            if row == rows_number - 1 and column == columns_number - 1:
+            if y == height - 1 and x == width - 1:
                 continue
 
             symbol = symbol if not negative else ' '
-            canvas.addch(row, column, symbol)
+            canvas.addch(y, x, symbol)
 
 
-def clean_draw(canvas, prev_xy, xy, prev_frame, frame):
+def clean_draw(canvas, prev_xy, xy, prev_frame, frame, draw=True):
     '''deletes prev frame and draws new one'''
     x0, y0 = prev_xy
     x1, y1 = xy
     if prev_frame:
-        draw_frame(canvas, y0, x0, prev_frame, negative=True)
-    draw_frame(canvas, y1, x1, frame)
+        draw_frame(canvas, x0, y0, prev_frame, negative=True)
+    if draw:
+        draw_frame(canvas, x1, y1, frame)
 
 
-def get_frame_size(text):
+def get_frame_size(text: str) -> Size:
     """
     Calculates size of multiline text fragment,
     returns pair — number of rows and colums.
     """
 
     lines = text.splitlines()
-    rows = len(lines)
-    columns = max([len(line) for line in lines])
+    height = len(lines)
+    width = max([len(line) for line in lines])
 
-    return rows, columns
+    return width, height
 
 
-def get_random_coordinate(
-    max_y: int,
-    max_x: int,
-    density: float = None
-) -> Generator[Coordinate, None, None]:
+def get_random_coordinate(max_x: int,
+                          max_y: int,
+                          density: float = None) -> Iterator[Coordinate]:
 
     used_xy = set()
     density = config.STAR_DENSITY if density is None else density

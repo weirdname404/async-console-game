@@ -1,11 +1,12 @@
-from typing import Generator
-from _types import Animation
+from typing import Iterator, List, Dict, Tuple, Any
+from core.types import Animation
 
 
-def shift_animation(animation: Animation) -> Generator[Animation, None, None]:
+def shift_animation(animation_t: Animation) -> Iterator[Tuple[Any, ...]]:
     """
     Shifts first tic of animation sequence to the end
     """
+    animation: List = list(animation_t)
     while True:
         init_tics, init_state = animation[0]
 
@@ -20,4 +21,13 @@ def shift_animation(animation: Animation) -> Generator[Animation, None, None]:
         last_tics, _ = animation[-1]
         animation[-1] = (last_tics + 1, init_state)
 
-        yield animation.copy()
+        yield tuple(animation.copy())
+
+
+class Singleton(type):
+    instances: Dict = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls.instances.get(cls) is None:
+            cls.instances[cls] = super().__call__(*args, **kwargs)
+        return cls.instances[cls]
